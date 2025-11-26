@@ -42,9 +42,9 @@ Dans le meme esprit, il existe une variante avec le pattern : **GIVEN, WHEN, THE
 On vérifie généralement les effets attendus d'exemples de deux types de cas d'utilisation :
 
 - **Cas nominal** : cas ou les exemples d'utilisation correspondent aux cas généraux (happy path).
-    - *Exemple : *****Prenons le cas de la division, des exemples de cas généraux sont 1/2, 3/7, etc.
+    - *Exemple :* Prenons le cas de la division, des exemples de cas généraux sont 1/2, 3/7, etc.
 - **Cas à la marge** : cas ou les exemples d'utilisation correspondent à des erreurs, des exceptions, des cas non généraux.
-    - *Exemple : *****Prenons le cas de la division, un exemple de cas à la marge est la division par 0.
+    - *Exemple :* Prenons le cas de la division, un exemple de cas à la marge est la division par 0.
 
 ## Ça marche ! Et de quoi j'ai besoin ?
 
@@ -93,7 +93,7 @@ De quoi écrire les tests (bibliothèque de tests, bibliothèque d'assertions) e
     
     Lancer la commande `python -m pytest` dans un shell :
     
-    ![Untitled](Testing%20940035c3cdc24a538985c8b350bf1e69/Untitled.png)
+    ![Untitled](img/img1.png)
     
 
 ## C'est quoi les bonnes pratiques ?
