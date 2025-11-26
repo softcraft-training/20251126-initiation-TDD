@@ -93,7 +93,7 @@ De quoi écrire les tests (bibliothèque de tests, bibliothèque d'assertions) e
     
     Lancer la commande `python -m pytest` dans un shell :
     
-    ![Untitled](img/img1.png)
+    ![Untitled](img1.png)
     
 
 ## C'est quoi les bonnes pratiques ?
