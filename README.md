@@ -105,3 +105,203 @@ Ecrire des tests unitaires de bonne qualité necessite de suivre quelques règle
 - **Repeatable** : les tests doivent etre deterministes et ne pas varier en fonction d'éléments extérieurs.
 - **Self-validating** : les tests doivent auto-suffisants et se suffire à eux-meme afin de déterminer un succès ou un échec.
 - **Through** : les tests doivent aussi bien prendre en considération le happy path que les scénarios négatifs.
+
+
+## C'est quoi les bonnes pratiques ?
+
+Ecrire des tests unitaires de bonne qualité necessite de suivre quelques règles :
+
+- **Fast** : les tests doivent etre rapides à l'execution afin d'obtenir une bonne expèrience développeur.
+- **Independent** : les tests doivent etre isolés et ne pas dépendre entre eux ou de dépendances tierces.
+- **Repeatable** : les tests doivent etre deterministes et ne pas varier en fonction d'éléments extérieurs.
+- **Self-validating** : les tests doivent auto-suffisants et se suffire à eux-meme afin de déterminer un succès ou un échec.
+- **Through** : les tests doivent aussi bien prendre en considération le happy path que les scénarios négatifs.
+
+## Et sinon TDD (Test Driven Development) ?
+
+TDD n’est pas une technique d’écriture de tests mais un cycle de développement guidé par les tests (le fait d’avoir des tests est une conséquence du cycle) :
+
+- **RED** : écrire un test et le faire échouer.
+- **GREEN** : écrire le code de production minimum permettant de faire passer le test en succès.
+- **REFACTOR** : nettoyer le code (Duplication, Lisibilité, Code Smells...).
+
+Et on recommence :) Ecrire des tests unitaires avec TDD offre plusieurs avantages :
+
+- Clarifie l'objectif avant de passer à l'implémentation du code.
+- Encourage le développement incrémetal grace aux baby steps.
+- Décourage le couplage de code et l'over engineering.
+
+## Mise en pratique
+
+**Objectif** : Initiation à TDD
+
+**Temps** : 30 minutes
+
+- **Le métier**
+    
+    Construire une fonction fizzBuzz qui transforme un entier en chaine de caractères selon les règles suivantes :
+    
+    - Pour les multiples de 3, remplacer le nombre par Fizz
+    - Pour les multiples de 5, remplacer le nombre par Buzz
+    - Pour les multiples et 3 et de 5, remplacer le nombre par FizzBuzz
+    - Pour les autres nombres, retourner le nombre
+    
+    ```bash
+    1 => 1
+    2 => 2
+    3 => Fizz
+    4 => 4
+    5 => Buzz
+    6 => Fizz
+    15 => FizzBuzz
+    ```
+    
+- **L'initialisation**
+    
+    Lancer les commandes dans un shell :
+    
+    ```bash
+    mkdir src
+    cd src
+    "" > fizzbuzz.py
+    "" > test_fizzbuzz.py
+    python -m pip install pytest
+    ```
+    
+- **Itération 1**
+    - **RED**
+        
+        Ecrire un test dans le fichier `test_fizzbuzz.py` et le faire échouer :
+        
+        ```python
+        import pytest
+        from fizzbuzz import fizzbuzz
+        
+        def test_siNombreEstUnAlors1():
+        	assert fizzbuzz(1) == "1"
+        ```
+        
+    - **GREEN**
+        
+        Ecrire le code de production minimum dans le fichier `fizzbuzz.py` permettant de faire passer le test en succès :
+        
+        ```python
+        def fizzbuzz(entry):
+        	return "1"
+        ```
+        
+    - **REFACTOR**
+        
+        RAS
+        
+- **Itération 2**
+    - **RED**
+        
+        Ecrire un test dans le fichier `test_fizzbuzz.py` et le faire échouer :
+        
+        ```python
+        // siNombreEstUnAlors1
+        
+        def test_siNombreNiMultipleDeTroisNiMultipleDeCinqAlorsNombre():
+        	assert fizzbuzz(2) == "2"
+        ```
+        
+    - **GREEN**
+        
+        Ecrire le code de production minimum dans le fichier `fizzbuzz.py` permettant de faire passer le test en succès :
+        
+        ```python
+        def fizzbuzz(entry):
+        	return str(entry);
+        ```
+        
+    - **REFACTOR**
+        
+        Nettoyer le code :
+        
+        ```python
+        casesNotMultipleOf3Nor5 = [(1, "1"), (2, "2")]
+        
+        @pytest.mark.parametrize("entry,expected", casesNotMultipleOf3Nor5)
+        def test_siNombreNiMultipleDeTroisNiMultipleDeCinqAlorsNombre(entry, expected):
+        	assert fizzbuzz(entry) == expected
+        ```
+        
+- **Itération 3**
+    - **RED**
+        
+        Ecrire un test dans le fichier `test_fizzbuzz.py` et le faire échouer :
+        
+        ```python
+        // siNombreNiMultipleDeTroisNiMultipleDeCinqAlorsNombre
+        
+        def test_siNombreMultipleDeTroisAlorsFizz():
+        	assert fizzbuzz(3) == "Fizz"
+        ```
+        
+    - **GREEN**
+        
+        Ecrire le code de production minimum dans le fichier `fizzbuzz.py` permettant de faire passer le test en succès :
+        
+        ```python
+        def fizzbuzz(entry):
+        	if entry == 3:
+            return 'Fizz'
+        	else:
+        		return str(entry);
+        ```
+        
+    - **REFACTOR**
+        
+        RAS
+        
+- **Itération 4**
+    - **RED**
+        
+        Ecrire un test dans le fichier `test_fizzbuzz.py` et le faire échouer :
+        
+        ```tsx
+        // siNombreNiMultipleDeTroisNiMultipleDeCinqAlorsNombre
+        
+        casesFizz = [(3, "Fizz"), (6, "Fizz")]
+        
+        @pytest.mark.parametrize("entry,expected", casesFizz)
+        def test_siNombreMultipleDeTroisAlorsFizz(entry, expected):
+        	assert fizzbuzz(entry) == expected
+        ```
+        
+    - **GREEN**
+        
+        Ecrire le code de production dans le fichier `fizzbuzz.py` minimum permettant de faire passer le test en succès :
+        
+        ```python
+        def fizzbuzz(entry):
+          if entry % 3 == 0: 
+        		return "Fizz"
+        	else:
+        		return str(entry)
+        ```
+        
+    - **REFACTOR**
+        
+        Nettoyer le code :
+        
+        ```python
+        def fizzbuzz(entry):
+          if isMultipleOf3(entry): 
+        		return "Fizz"
+        	else:
+        		return str(entry)
+        
+        def isMultipleOf3(number): 
+          return number % 3 == 0
+        ```
+
+## Exercice
+
+**Objectif** : Pratique de TDD
+
+**Temps** : 60 à 90 minutes
+
+**Sujet** : [Tennis Kata](https://codingdojo.org/fr/kata/Tennis/)
+
