@@ -305,3 +305,153 @@ Et on recommence :) Ecrire des tests unitaires avec TDD offre plusieurs avantage
 
 **Sujet** : [Tennis Kata](https://codingdojo.org/fr/kata/Tennis/)
 
+## Les doublures/simulacres
+
+Permet de simuler l'utilisation de dépendances necessaire à l'unité en isolation testée comme un composant non disponible, une application non accessible pendant la phase de développement (API HTTP Tier, ...) , un élément complexe ou long à charger (Base de données, ...)
+
+### Dummy
+
+Toutes les méthodes lèveront une exception si elles sont appelées car seule la présence de le dépendance est utile pour faire compiler.
+
+### Stub 
+
+Une ou plusieurs méthodes sont prévues pour renvoyer toujours la même valeur fixe quelques soient les paramètres qui lui sont passés.
+
+### Mock
+
+Implémentations simplistes des méthodes proche du Stub mais avec des traitements conditionnels ne gérant que quelques cas.
+
+
+### Fake
+
+Mime fidèlement le comportement à simuler. Il mime de manière poussée la logique et le comportement métier de l'élément auquel il se substitue sans pour autant avoir d'interaction avec le monde réel.
+
+### Spy
+
+Permet de vérifier, compter, enregistrer que les appels à une méthode sont effectués.
+
+
+### J'ai mal à mes dépendances...
+
+Afin de réaliser les attendus, un système nécessite bien souvent des dépendances, parfois explicites, parfois implicites. Dans le cadre des tests automatisés, il est souhaitable de pouvoir les isoler afin de les contrôler et ainsi maitriser totalement le contexte.
+
+```
+class LunchService():
+    def is_it_time_to_eat(self):
+        # DateTime.Now est une dépendance implicites et non maitrisée
+        return datetime.now().hour >= 12 and datetime.now().hour <= 14
+```
+
+### Passage par valeur
+
+```
+class LunchService():
+    def is_it_time_to_eat(self, now):
+        # now est maintenant une dépendance explicite et controllée par extérieur
+        return now.hour >= 12 and now.hour <= 14
+
+def test_should_be_lunch_time_when_its_13h():
+    lunchService = LunchService()
+
+    dt = datetime(2026, 1, 1, 13, 30)
+
+    assert lunchService.is_it_time_to_eat(dt) == True
+```
+
+### Passage par délégué
+
+```
+class LunchService():
+    def is_it_time_to_eat(self, getNow):
+        # getNow() est maintenant une dépendance explicite et controllée par extérieur
+        return getNow().hour >= 12 and getNow().hour <= 14
+
+def test_should_be_lunch_time_when_its_13h():
+    lunchService = LunchService()
+
+    getNow = lambda : datetime(2026, 1, 1, 13, 30)
+
+    assert lunchService.is_it_time_to_eat(getNow) == True
+```
+
+### Passage par contrat
+
+```
+class Clock():
+    def getNow():
+        return datetime.now()
+    
+class LunchService():
+    # clock est maintenant une dépendance implicite et controllée par extérieur
+    def is_it_time_to_eat(self, c):
+        return c.getNow().hour
+        return c.getNow().hour >= 12 and c.getNow().hour <= 14
+
+class FakeClock():
+    def __init__(self, dt):
+        self.dt = dt
+
+    def getNow(self):
+        print(self.dt)
+        return self.dt.now()
+
+def test_3should_be_lunch_time_when_its_13h():
+    lunchService = LunchService()
+
+    clock = FakeClock(datetime(2026, 1, 1, 12, 30))
+
+    assert lunchService.is_it_time_to_eat(clock) == ""
+```
+
+### Surcharge par héritage
+
+```
+class LunchService():
+    # heritage
+    def is_it_time_to_eat(self):
+        return self.getNow().hour >= 12 and self.getNow().hour <= 14
+    
+    def getNow(self):
+        return datetime.now()
+    
+class LunchServiceWithFakeGetNow(LunchService):
+    def __init__(self, now):
+        self.now = now
+
+    def getNow(self):
+        return self.now
+    
+def test_lunchService(mocker):
+    service = LunchServiceWithFakeGetNow(datetime(2026,1,1,13,30))
+
+    assert service.is_it_time_to_eat() == True
+```
+
+### Exemple pytest-mock
+
+```
+def test_lunchService(mocker):
+    service = LunchService()
+
+    # Dummy
+    dummy = mocker.Mock()
+
+    # Stub
+    stub = mocker.Mock()
+    stub.p1 = ""
+    stub.method1.return_value("YourValue")
+    assert stub.assert_called_once_with()
+
+    # Spy
+    objectToSpy = mocker.spy(FakeClock, "getNow")
+
+    assert objectToSpy.call_count == 1
+``` 
+
+## Exercice
+
+**Objectif** : Pratique de TDD avec des doublures
+
+**Temps** : 60 à 90 minutes
+
+**Sujet** : [Unusual spending](https://kata-log.rocks/unusual-spending-kata)
