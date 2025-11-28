@@ -94,19 +94,7 @@ De quoi écrire les tests (bibliothèque de tests, bibliothèque d'assertions) e
     Lancer la commande `python -m pytest` dans un shell :
     
     ![Untitled](img1.png)
-    
-
-## C'est quoi les bonnes pratiques ?
-
-Ecrire des tests unitaires de bonne qualité necessite de suivre quelques règles :
-
-- **Fast** : les tests doivent etre rapides à l'execution afin d'obtenir une bonne expèrience développeur.
-- **Independent** : les tests doivent etre isolés et ne pas dépendre entre eux ou de dépendances tierces.
-- **Repeatable** : les tests doivent etre deterministes et ne pas varier en fonction d'éléments extérieurs.
-- **Self-validating** : les tests doivent auto-suffisants et se suffire à eux-meme afin de déterminer un succès ou un échec.
-- **Through** : les tests doivent aussi bien prendre en considération le happy path que les scénarios négatifs.
-
-
+  
 ## C'est quoi les bonnes pratiques ?
 
 Ecrire des tests unitaires de bonne qualité necessite de suivre quelques règles :
