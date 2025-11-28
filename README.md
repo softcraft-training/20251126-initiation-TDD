@@ -115,7 +115,7 @@ Ecrire des tests unitaires de bonne qualité necessite de suivre quelques règle
 - **Independent** : les tests doivent etre isolés et ne pas dépendre entre eux ou de dépendances tierces.
 - **Repeatable** : les tests doivent etre deterministes et ne pas varier en fonction d'éléments extérieurs.
 - **Self-validating** : les tests doivent auto-suffisants et se suffire à eux-meme afin de déterminer un succès ou un échec.
-- **Through** : les tests doivent aussi bien prendre en considération le happy path que les scénarios négatifs.
+- **Thorough** : les tests doivent aussi bien prendre en considération le happy path que les scénarios négatifs.
 
 ## Et sinon TDD (Test Driven Development) ?
 
@@ -305,37 +305,11 @@ Et on recommence :) Ecrire des tests unitaires avec TDD offre plusieurs avantage
 
 **Sujet** : [Tennis Kata](https://codingdojo.org/fr/kata/Tennis/)
 
-## Les doublures/simulacres
-
-Permet de simuler l'utilisation de dépendances necessaire à l'unité en isolation testée comme un composant non disponible, une application non accessible pendant la phase de développement (API HTTP Tier, ...) , un élément complexe ou long à charger (Base de données, ...)
-
-### Dummy
-
-Toutes les méthodes lèveront une exception si elles sont appelées car seule la présence de le dépendance est utile pour faire compiler.
-
-### Stub 
-
-Une ou plusieurs méthodes sont prévues pour renvoyer toujours la même valeur fixe quelques soient les paramètres qui lui sont passés.
-
-### Mock
-
-Implémentations simplistes des méthodes proche du Stub mais avec des traitements conditionnels ne gérant que quelques cas.
-
-
-### Fake
-
-Mime fidèlement le comportement à simuler. Il mime de manière poussée la logique et le comportement métier de l'élément auquel il se substitue sans pour autant avoir d'interaction avec le monde réel.
-
-### Spy
-
-Permet de vérifier, compter, enregistrer que les appels à une méthode sont effectués.
-
-
-### J'ai mal à mes dépendances...
+## J'ai mal à mes dépendances...
 
 Afin de réaliser les attendus, un système nécessite bien souvent des dépendances, parfois explicites, parfois implicites. Dans le cadre des tests automatisés, il est souhaitable de pouvoir les isoler afin de les contrôler et ainsi maitriser totalement le contexte.
 
-```
+```python
 class LunchService():
     def is_it_time_to_eat(self):
         # DateTime.Now est une dépendance implicites et non maitrisée
@@ -344,7 +318,7 @@ class LunchService():
 
 ### Passage par valeur
 
-```
+```python
 class LunchService():
     def is_it_time_to_eat(self, now):
         # now est maintenant une dépendance explicite et controllée par extérieur
@@ -360,7 +334,7 @@ def test_should_be_lunch_time_when_its_13h():
 
 ### Passage par délégué
 
-```
+```python
 class LunchService():
     def is_it_time_to_eat(self, getNow):
         # getNow() est maintenant une dépendance explicite et controllée par extérieur
@@ -376,7 +350,7 @@ def test_should_be_lunch_time_when_its_13h():
 
 ### Passage par contrat
 
-```
+```python
 class Clock():
     def getNow():
         return datetime.now()
@@ -405,7 +379,7 @@ def test_3should_be_lunch_time_when_its_13h():
 
 ### Surcharge par héritage
 
-```
+```python
 class LunchService():
     # heritage
     def is_it_time_to_eat(self):
@@ -427,26 +401,80 @@ def test_lunchService(mocker):
     assert service.is_it_time_to_eat() == True
 ```
 
-### Exemple pytest-mock
+## Les doublures/simulacres
 
-```
-def test_lunchService(mocker):
-    service = LunchService()
+Permet de simuler l'utilisation de dépendances necessaires à l'unité testée en isolation.
+*Exemple :* un composant non disponible, une application non accessible pendant la phase de développement (API HTTP Tier, ...) , un élément complexe ou long à charger (Base de données, ...).
 
-    # Dummy
-    dummy = mocker.Mock()
+- **Dummy :** Toutes les méthodes lèveront une exception si elles sont appelées car seule la présence de le dépendance est utile pour faire compiler.
+- **Stub :** Une ou plusieurs méthodes sont prévues pour renvoyer toujours la même valeur fixe quelques soient les paramètres qui lui sont passés.
+- **Mock :** Implémentations simplistes des méthodes proche du Stub mais avec des traitements conditionnels ne gérant que quelques cas.
+- **Fake :** Mime fidèlement le comportement à simuler. Il mime de manière poussée la logique et le comportement métier de l'élément auquel il se substitue sans pour autant avoir d'interaction avec le monde réel.
+- **Spy :** Permet de vérifier, compter, enregistrer que les appels à une méthode sont effectués.
 
-    # Stub
-    stub = mocker.Mock()
-    stub.p1 = ""
-    stub.method1.return_value("YourValue")
-    assert stub.assert_called_once_with()
+## Mise en pratique
 
-    # Spy
-    objectToSpy = mocker.spy(FakeClock, "getNow")
+**Objectif** : Ecrire son premier test
 
-    assert objectToSpy.call_count == 1
-``` 
+**Temps** : 15 minutes
+
+- **L'initialisation**
+    
+    Lancer les commandes dans un shell :
+    
+    ```bash
+    mkdir src
+    cd src
+    "" > doubles.py
+    "" > test_doubles.py
+    python -m pip install pytest
+    ```
+    
+- **Le code à tester**
+    
+    Ecrire dans le fichier `doubles.py` :
+    
+    ```python
+    def iDoStuffWithSomeCollaborators(bdd, notifier):
+        data = bdd.getData()
+        notifier.notify("alert " + data)
+        pass
+    ```
+    
+- **Le code de test**
+    
+    Ecrire dans le fichier `test_doubles.py` :
+    
+    ```python
+    import pytest
+    from doubles import iDoStuffWithSomeCollaborators
+    
+    def test_iDoStuffWithSomeCollaborators(mocker):
+        bdd = mocker.Mock()
+        bdd.getData.return_value = "some data"
+    
+        notifier = mocker.Mock()
+    
+    	iDoStuffWithSomeCollaborators(bdd, notifier)
+
+        notifier.notify.assert_called_with("alert some data")
+    ```
+    
+- **Lancer les tests**
+    
+    Lancer la commande `python -m pytest` dans un shell.
+  
+### pytest-mock
+
+- return_value
+- side_effect
+- assert_called()
+- assert_called_once()
+- assert_called_with(expectedArgs)
+- assert_called_once_with(expectedArgs)
+- assert_not_called()
+- call_count
+- mock_calls
 
 ## Exercice
 
